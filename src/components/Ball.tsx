@@ -1,9 +1,23 @@
-import { StyleSheet, View } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Animated } from 'react-native';
 
 const Ball: React.FC = () => {
+  const [position, setPosition] = useState<Animated.ValueXY | null>(null);
+
+  useEffect(() => {
+    const position = new Animated.ValueXY({ x: 0, y: 0 });
+    setPosition(position);
+
+    Animated.spring(position, {
+      toValue: { x: 200, y: 500 },
+      useNativeDriver: false
+    }).start();
+  }, []);
+
   return (
-    <View style={styles.ball} />
+    <Animated.View style={position?.getLayout()} >
+      <View style={styles.ball}/>
+    </Animated.View>
   );
 };
 
