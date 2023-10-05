@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { View, Animated, PanResponder } from 'react-native';
 import { Data } from '../models';
 
@@ -28,6 +28,24 @@ const Deck: React.FC<DeckProps> = ({ data, renderCard }) => {
     })
   ).current;
 
+  const getCardStyle = useCallback(() => {
+
+    const rotate = pan.x.interpolate({
+      inputRange: [-500, 0, 500],
+      outputRange: ['-120deg', '0deg', '120deg']
+    });
+
+    //pan.getLayout() returns an object like { left: 0, top: 0 }
+    //rotate return an amount of degrees like 45deg
+
+    return { left: pan.x, transform: [{ rotate }] }; // This will prevent the movement in Y axis.
+
+    // return { left: pan.x, top: pan.y, transform: [{ rotate }] };
+    // return { transform: [{ rotate: rotate }, { translateX: pan.x }, { translateY: pan.y }] };
+    // return { ...pan.getLayout(), transform: [{ rotate: rotate }] };
+    // return { transform: [{ translateX: pan.x }, { translateY: pan.y }, { rotate: rotate }], }
+  }, [pan]);
+
   return (
     <View>
       {data.map((item, index) => {
@@ -35,8 +53,7 @@ const Deck: React.FC<DeckProps> = ({ data, renderCard }) => {
           return (
             <Animated.View
               key={item.id}
-              // style={pan.getLayout()}
-              style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }], }}
+              style={getCardStyle()}
               {...panResponder.panHandlers}
             >
               {renderCard(item)}
