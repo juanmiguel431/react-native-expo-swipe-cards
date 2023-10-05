@@ -5,6 +5,8 @@ import { Data } from '../models';
 type DeckProps = {
   data: Data[];
   renderCard: (item: Data) => React.ReactNode;
+  onSwipeRight?: () => void;
+  onSwipeLeft?: () => void;
 }
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -27,16 +29,28 @@ const Deck: React.FC<DeckProps> = ({ data, renderCard }) => {
 
       onPanResponderRelease: (e, gestureState) => {
         if (gestureState.dx > SWIPE_THRESHOLD) {
-          Animated.timing(pan, { toValue: { x: SCREEN_WIDTH, y: 0 }, duration: SWIPE_OUT_DURATION, useNativeDriver: false }).start();
+          forceSwipe('right');
         } else if (gestureState.dx < -SWIPE_THRESHOLD) {
-          Animated.timing(pan, { toValue: { x: -SCREEN_WIDTH, y: 0 }, duration: SWIPE_OUT_DURATION, useNativeDriver: false }).start();
+          forceSwipe('left');
         } else {
-          // pan.extractOffset();
-          Animated.spring(pan, { toValue: 0, useNativeDriver: false }).start();
+          // pan.extractOffset(); // Keep the object in the place that you want.
+          Animated.spring(pan, { toValue: 0, useNativeDriver: false }).start(); // Return to the original position.
         }
       }
     })
   ).current;
+
+  const onSwipeComplete = useCallback((direction: 'left' | 'right') => {
+    console.log(direction);
+  }, []);
+
+  const forceSwipe = useCallback((direction: 'left' | 'right') => {
+    const dir = direction === 'left' ? -1 : 1;
+    Animated.timing(pan, { toValue: { x: SCREEN_WIDTH * dir, y: 0 }, duration: SWIPE_OUT_DURATION, useNativeDriver: false }).start(() => {
+      onSwipeComplete(direction);
+    });
+  }, [pan, onSwipeComplete]);
+
 
   const getCardStyle = useCallback(() => {
     const width = SCREEN_WIDTH * 1.5;
