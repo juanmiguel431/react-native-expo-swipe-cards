@@ -1,11 +1,13 @@
 import React, { useCallback, useRef } from 'react';
-import { View, Animated, PanResponder } from 'react-native';
+import { View, Animated, PanResponder, Dimensions } from 'react-native';
 import { Data } from '../models';
 
 type DeckProps = {
   data: Data[];
   renderCard: (item: Data) => React.ReactNode;
 }
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const Deck: React.FC<DeckProps> = ({ data, renderCard }) => {
   const pan = useRef(new Animated.ValueXY()).current;
@@ -29,9 +31,10 @@ const Deck: React.FC<DeckProps> = ({ data, renderCard }) => {
   ).current;
 
   const getCardStyle = useCallback(() => {
+    const width = SCREEN_WIDTH * 1.5;
 
     const rotate = pan.x.interpolate({
-      inputRange: [-500, 0, 500],
+      inputRange: [-width, 0, width],
       outputRange: ['-120deg', '0deg', '120deg']
     });
 
