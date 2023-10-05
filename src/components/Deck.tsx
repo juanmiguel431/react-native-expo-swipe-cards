@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Animated } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Animated, PanResponder } from 'react-native';
 import { Data } from '../models';
 
 type DeckProps = {
@@ -8,10 +8,24 @@ type DeckProps = {
 }
 
 const Deck: React.FC<DeckProps> = ({ data, renderCard }) => {
+  const pan = useRef(new Animated.ValueXY()).current;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (e, gestureState) => {
+        pan.setValue({ x: gestureState.dx, y: gestureState.dy });
+      },
+      onPanResponderRelease: () => {}
+    })
+  ).current;
+
   return (
-    <View>
+    <Animated.View
+      style={pan.getLayout()}
+      {...panResponder.panHandlers}>
       {data.map(item => renderCard(item))}
-    </View>
+    </Animated.View>
   );
 };
 
