@@ -8,6 +8,8 @@ type DeckProps = {
 }
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
+const SWIPE_THRESHOLD = 0.65 * SCREEN_WIDTH;
+const SWIPE_OUT_DURATION = 250;
 
 const Deck: React.FC<DeckProps> = ({ data, renderCard }) => {
   const pan = useRef(new Animated.ValueXY()).current;
@@ -23,9 +25,15 @@ const Deck: React.FC<DeckProps> = ({ data, renderCard }) => {
         event(e, gestureState);
       },
 
-      onPanResponderRelease: () => {
-        // pan.extractOffset();
-        Animated.spring(pan, { toValue: 0, useNativeDriver: false }).start();
+      onPanResponderRelease: (e, gestureState) => {
+        if (gestureState.dx > SWIPE_THRESHOLD) {
+          Animated.timing(pan, { toValue: { x: SCREEN_WIDTH, y: 0 }, duration: SWIPE_OUT_DURATION, useNativeDriver: false }).start();
+        } else if (gestureState.dx < -SWIPE_THRESHOLD) {
+          Animated.timing(pan, { toValue: { x: -SCREEN_WIDTH, y: 0 }, duration: SWIPE_OUT_DURATION, useNativeDriver: false }).start();
+        } else {
+          // pan.extractOffset();
+          Animated.spring(pan, { toValue: 0, useNativeDriver: false }).start();
+        }
       }
     })
   ).current;
