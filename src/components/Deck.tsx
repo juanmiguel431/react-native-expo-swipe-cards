@@ -29,12 +29,24 @@ const Deck: React.FC<DeckProps> = ({ data, renderCard }) => {
   ).current;
 
   return (
-    <Animated.View
-      // style={pan.getLayout()}
-      style={{ transform: [{translateX: pan.x}, {translateY: pan.y}], }}
-      {...panResponder.panHandlers}>
-      {data.map(item => renderCard(item))}
-    </Animated.View>
+    <View>
+      {data.map((item, index) => {
+        if (index === 0) {
+          return (
+            <Animated.View
+              key={item.id}
+              // style={pan.getLayout()}
+              style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }], }}
+              {...panResponder.panHandlers}
+            >
+              {renderCard(item)}
+            </Animated.View>
+          );
+        }
+
+        return renderCard(item);
+      })}
+    </View>
   );
 };
 
