@@ -52,6 +52,8 @@ export default function App() {
             <Card>
               <Card.Title>All done!</Card.Title>
               <Text>There is no more content here!</Text>
+              <Card.Divider />
+              <Button title="Get More!" />
             </Card>
           )}
         />
