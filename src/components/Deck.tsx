@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { View, Animated, PanResponder, Dimensions, LayoutAnimation } from 'react-native';
+import { View, Animated, PanResponder, Dimensions, LayoutAnimation, StyleSheet } from 'react-native';
 import { Data } from '../models';
 
 type DeckProps = {
@@ -108,7 +108,7 @@ const Deck: React.FC<DeckProps> = (
           return (
             <Animated.View
               key={item.id}
-              style={getCardStyle()}
+              style={[getCardStyle(), styles.cardStyle]}
               {...panResponder.panHandlers}
             >
               {renderCard(item)}
@@ -116,10 +116,22 @@ const Deck: React.FC<DeckProps> = (
           );
         }
 
-        return renderCard(item);
+        return (
+          <Animated.View key={item.id} style={[styles.cardStyle, { zIndex: i * -1 }]}>
+            {renderCard(item)}
+          </Animated.View>
+        );
       })}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  cardStyle: {
+    position: 'absolute',
+    width: SCREEN_WIDTH,
+    // left: 0, right: 0 // Don't use this because will conflict with the card animation.
+  }
+})
 
 export default Deck;
