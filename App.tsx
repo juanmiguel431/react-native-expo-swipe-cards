@@ -1,10 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NativeModules, Platform, StyleSheet, Text, View } from 'react-native';
 // import Ball from './src/components/Ball';
 import Deck from './src/components/Deck';
 import { Data } from './src/models';
 import { useCallback } from 'react';
 import { Card, Button } from '@rneui/themed';
+
+const { UIManager } = NativeModules;
+
+if (Platform.OS === 'android') {
+  UIManager.setLayoutAnimationEnabledExperimental &&
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 const DATA: Data[] = [
   { id: 1, text: 'Card #1', uri: 'https://images.unsplash.com/photo-1575688005938-aad990594722?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1300&q=80' },

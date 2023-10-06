@@ -1,19 +1,30 @@
-import React, { useCallback, useRef } from 'react';
-import { View, Animated, PanResponder, Dimensions } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { View, Animated, PanResponder, Dimensions, LayoutAnimation } from 'react-native';
 import { Data } from '../models';
 
 type DeckProps = {
   data: Data[];
   renderCard: (item: Data) => React.ReactNode;
-  onSwipeRight?: () => void;
-  onSwipeLeft?: () => void;
+  onSwipeRight?: (item: Data) => void;
+  onSwipeLeft?: (item: Data) => void;
+  onSwipe?: (item: Data) => void;
 }
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SWIPE_THRESHOLD = 0.65 * SCREEN_WIDTH;
 const SWIPE_OUT_DURATION = 250;
 
-const Deck: React.FC<DeckProps> = ({ data, renderCard }) => {
+const defaultEmptySwipe = () => {};
+
+const Deck: React.FC<DeckProps> = (
+  {
+    data,
+    renderCard,
+    onSwipeLeft = defaultEmptySwipe,
+    onSwipeRight = defaultEmptySwipe,
+    onSwipe = defaultEmptySwipe
+  }) => {
+  const [index, setIndex] = useState(0);
   const pan = useRef(new Animated.ValueXY()).current;
 
   const panResponder = useRef(
@@ -41,16 +52,28 @@ const Deck: React.FC<DeckProps> = ({ data, renderCard }) => {
   ).current;
 
   const onSwipeComplete = useCallback((direction: 'left' | 'right') => {
-    console.log(direction);
-  }, []);
+    // LayoutAnimation.spring();
+    setIndex((value) => value + 1);
+    pan.setValue({ x: 0, y: 0 });
+    const item = data[index];
+    if (direction === 'left') {
+      onSwipeLeft(item);
+    } else {
+      onSwipeRight(item);
+    }
+    onSwipe(item);
+  }, [data, index, onSwipe, onSwipeLeft, onSwipeRight, pan]);
 
   const forceSwipe = useCallback((direction: 'left' | 'right') => {
     const dir = direction === 'left' ? -1 : 1;
-    Animated.timing(pan, { toValue: { x: SCREEN_WIDTH * dir, y: 0 }, duration: SWIPE_OUT_DURATION, useNativeDriver: false }).start(() => {
+    Animated.timing(pan, {
+      toValue: { x: SCREEN_WIDTH * dir, y: 0 },
+      duration: SWIPE_OUT_DURATION,
+      useNativeDriver: false
+    }).start(() => {
       onSwipeComplete(direction);
     });
   }, [pan, onSwipeComplete]);
-
 
   const getCardStyle = useCallback(() => {
     const width = SCREEN_WIDTH * 1.5;
@@ -73,8 +96,9 @@ const Deck: React.FC<DeckProps> = ({ data, renderCard }) => {
 
   return (
     <View>
-      {data.map((item, index) => {
-        if (index === 0) {
+      {data.map((item, i) => {
+        if (i < index) return;
+        if (i === index) {
           return (
             <Animated.View
               key={item.id}
