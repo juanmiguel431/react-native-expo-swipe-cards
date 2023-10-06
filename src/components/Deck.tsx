@@ -117,7 +117,15 @@ const Deck: React.FC<DeckProps> = (
         }
 
         return (
-          <Animated.View key={item.id} style={[styles.cardStyle, { zIndex: i * -1 }]}>
+          <Animated.View
+            key={item.id}
+            style={[
+              styles.cardStyle,
+              {
+                zIndex: i * -1,
+                top: 10 * (i - index)
+              }
+            ]}>
             {renderCard(item)}
           </Animated.View>
         );
