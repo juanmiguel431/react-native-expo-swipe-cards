@@ -8,6 +8,7 @@ type DeckProps = {
   onSwipeRight?: (item: Data) => void;
   onSwipeLeft?: (item: Data) => void;
   onSwipe?: (item: Data) => void;
+  renderNoMoreCard?: () => React.ReactNode;
 }
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -20,6 +21,7 @@ const Deck: React.FC<DeckProps> = (
   {
     data,
     renderCard,
+    renderNoMoreCard,
     onSwipeLeft = defaultEmptySwipe,
     onSwipeRight = defaultEmptySwipe,
     onSwipe = defaultEmptySwipe
@@ -93,6 +95,10 @@ const Deck: React.FC<DeckProps> = (
     // return { ...pan.getLayout(), transform: [{ rotate: rotate }] };
     // return { transform: [{ translateX: pan.x }, { translateY: pan.y }, { rotate: rotate }], }
   }, [pan]);
+
+  if (index >= data.length) {
+    return renderNoMoreCard && renderNoMoreCard();
+  }
 
   return (
     <View>

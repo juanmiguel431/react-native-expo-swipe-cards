@@ -1,10 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import { NativeModules, Platform, StyleSheet, Text, View } from 'react-native';
+import { NativeModules, Platform, StyleSheet } from 'react-native';
 // import Ball from './src/components/Ball';
 import Deck from './src/components/Deck';
 import { Data } from './src/models';
 import { useCallback } from 'react';
-import { Card, Button } from '@rneui/themed';
+import { Card, Button, Text } from '@rneui/themed';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 
 const { UIManager } = NativeModules;
 
@@ -26,12 +27,12 @@ const DATA: Data[] = [
 
 export default function App() {
 
-  const renderCard = useCallback( (item: Data) => {
+  const renderCard = useCallback((item: Data) => {
     return (
       <Card key={item.id}>
         <Card.Title>{item.text}</Card.Title>
         <Card.Image style={{ padding: 0 }} source={{ uri: item.uri, }}/>
-        <Text >I can customize the card further.</Text>
+        <Text>I can customize the card further.</Text>
         <Button
           title="View Now!"
           icon={{ name: 'code', color: 'white' }}
@@ -42,13 +43,21 @@ export default function App() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Deck
-        data={DATA}
-        renderCard={renderCard}
-      />
-      <StatusBar style="auto"/>
-    </View>
+    <SafeAreaProvider>
+      <SafeAreaView>
+        <Deck
+          data={DATA}
+          renderCard={renderCard}
+          renderNoMoreCard={() => (
+            <Card>
+              <Card.Title>All done!</Card.Title>
+              <Text>There is no more content here!</Text>
+            </Card>
+          )}
+        />
+        <StatusBar style="auto"/>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
