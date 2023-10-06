@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Animated, PanResponder, Dimensions, LayoutAnimation, StyleSheet } from 'react-native';
 import { Data } from '../models';
 
@@ -28,6 +28,10 @@ const Deck: React.FC<DeckProps> = (
   }) => {
   const [index, setIndex] = useState(0);
   const pan = useRef(new Animated.ValueXY()).current;
+
+  useEffect(() => {
+    setIndex(0);
+  }, [data]);
 
   const panResponder = useRef(
     PanResponder.create({
