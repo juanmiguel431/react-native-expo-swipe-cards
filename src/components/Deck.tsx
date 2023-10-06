@@ -54,7 +54,7 @@ const Deck: React.FC<DeckProps> = (
   ).current;
 
   const onSwipeComplete = useCallback((direction: 'left' | 'right') => {
-    // LayoutAnimation.spring();
+    LayoutAnimation.spring();
     setIndex((value) => value + 1);
     pan.setValue({ x: 0, y: 0 });
     const item = data[index];
